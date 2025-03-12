@@ -18,46 +18,14 @@ $pageTitle = "タスク追加";
     <div class="container mt-4">
         <h1 class="mb-4"><?php echo $pageTitle; ?></h1>
         <?php
-        // データベース接続
-        require_once 'db_connect.php';
-
-        // POSTデータのチェック
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            // POSTデータを取得
-            $title = $_POST['title'];
-            $description = isset($_POST['description']) ? $_POST['description'] : '';
-            $due_date = !empty($_POST['due_date']) ? $_POST['due_date'] : null;
-            $priority = isset($_POST['priority']) ? $_POST['priority'] : 2;
-
-            try {
-                // SQL文の準備
-                $sql = "INSERT INTO tasks (title, description, due_date, priority) 
-                VALUES (:title, :description, :due_date, :priority)";
-
-                // クエリの準備
-                $stmt = $conn->prepare($sql);
-
-                // パラメータを紐付け
-                $stmt->bindParam(':title', $title);
-                $stmt->bindParam(':description', $description);
-                $stmt->bindParam(':due_date', $due_date);
-                $stmt->bindParam(':priority', $priority, PDO::PARAM_INT);
-
-                // クエリの実行
-                $stmt->execute();
-
-                // 成功メッセージの設定
-                $message = "タスクが正常に追加されました";
-                $status = "success";
-            } catch (PDOException $e) {
-                // エラーメッセージの設定
-                $message = "エラー: " . $e->getMessage();
-                $status = "danger";
-            }
-
-            // 一時的なメッセージを含めてリダイレクト（今後はセッションを使った方法に改良予定）
-            header("Location: add_task.php?message=" . urlencode($message) . "&status=" . $status);
-            exit();
+        // メッセージの表示
+        if (isset($_GET['message'])) {
+            $message = $_GET['message'];
+            $status = isset($_GET['status']) ? $_GET['status'] : 'info';
+            echo '<div class="alert alert-' . $status . ' alert-dismissible fade show" role="alert">';
+            echo $message;
+            echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="閉じる"></button>';
+            echo '</div>';
         }
         ?>
 
